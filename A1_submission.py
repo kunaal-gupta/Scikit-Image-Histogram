@@ -78,7 +78,28 @@ def part2_histogram_equalization():
 
 
 def part3_histogram_comparing():
-    """add your code here"""
+    DayImage = skimage.util.img_as_ubyte(rgb2gray(io.imread("day.jpg")))
+    NightImage = skimage.util.img_as_ubyte(rgb2gray(io.imread("night.jpg")))
+
+    print(len(DayImage.ravel()))
+    print(len(NightImage.ravel()))
+
+
+    plt.subplot(1, 2, 1)
+    plt.title("Histogram of numpy Day Image")
+    hist2, bin_edges = np.histogram(DayImage, bins=256, range=(0, 256))
+    plt.xlabel("grayscale value")
+    plt.ylabel("pixel count")
+    plt.plot(bin_edges[0:-1], hist2)
+
+    plt.subplot(1, 2, 2)
+    plt.title("Histogram of numpy Night Image")
+    hist2, bin_edges = np.histogram(NightImage, bins=256, range=(0, 256))
+    plt.xlabel("grayscale value")
+    plt.ylabel("pixel count")
+    plt.plot(bin_edges[0:-1], hist2)
+
+    plt.show()
 
 
 def part4_histogram_matching():
@@ -86,7 +107,7 @@ def part4_histogram_matching():
 
 
 if __name__ == '__main__':
-    part1_histogram_compute()
+    # part1_histogram_compute()
     part2_histogram_equalization()
     part3_histogram_comparing()
     part4_histogram_matching()
