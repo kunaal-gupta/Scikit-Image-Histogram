@@ -1,3 +1,5 @@
+import cv2
+import skimage
 import skimage.util
 from skimage import io
 import numpy as np
@@ -36,9 +38,12 @@ def BinCompute(bin_arr, pixel):
 
 def part1_histogram_compute():
     # Reading Image in grayscale
-    image = io.imread("test.jpg")
-    grayImage = rgb2gray(image)
-    image = skimage.util.img_as_ubyte(grayImage)
+    image = cv2.imread('test.jpg', 0)
+    # print(image)
+
+    # image = io.imread("test.jpg")
+    # grayImage = rgb2gray(image)
+    # image = skimage.util.img_as_ubyte(grayImage)
 
     # Converting Image array to 1-D array
     fimage = image.ravel()
@@ -54,22 +59,27 @@ def part1_histogram_compute():
     for pixel in fimage:
         pixelCountDict[BinCompute(bin_arr, pixel)] += 1
 
+    print(pixelCountDict.keys())
+    print()
+
     # Plotting Self histogram
     plt.subplot(1, 2, 1)
     plt.title("Self Histogram")
     plt.xlabel("grayscale value")
     plt.ylabel("pixel count")
-    plt.plot(list(pixelCountDict.keys()), list(pixelCountDict.values()))
+    plt.plot(list(pixelCountDict.values()))
 
     # Plotting NumPy histogram
     plt.subplot(1, 2, 2)
     plt.title("Histogram of numpy Image")
     hist2, bin_edges = np.histogram(image, bins=64, range=(0, 256))
+    print((hist2))
+    print(bin_edges[0:])
     plt.title("NumPy Histogram")
     plt.xlabel("grayscale value")
     plt.ylabel("pixel count")
 
-    plt.plot(bin_edges[0:-1], hist2)
+    plt.plot(hist2)
     plt.show()
 
 
@@ -83,7 +93,6 @@ def part3_histogram_comparing():
 
     print(len(DayImage.ravel()))
     print(len(NightImage.ravel()))
-
 
     plt.subplot(1, 2, 1)
     plt.title("Histogram of numpy Day Image")
@@ -107,7 +116,7 @@ def part4_histogram_matching():
 
 
 if __name__ == '__main__':
-    # part1_histogram_compute()
+    part1_histogram_compute()
     part2_histogram_equalization()
     part3_histogram_comparing()
     part4_histogram_matching()
