@@ -1,3 +1,5 @@
+import math
+
 import cv2
 import skimage
 import skimage.util
@@ -35,6 +37,14 @@ def BinCompute(bin_arr, pixel):
             # Returning the bin element
             return bin_arr[i]
 
+
+def CummulativeHistogram(Hist):
+    prev = 0
+    for i in Hist:
+        Hist[i] = Hist[i] + prev
+        prev = Hist[i]
+
+    return Hist
 
 def part1_histogram_compute():
     # Reading Image in grayscale
@@ -81,42 +91,80 @@ def part1_histogram_compute():
 
     plt.plot(hist2)
     plt.show()
-
-
 def part2_histogram_equalization():
-    """add your code here"""
+    # Reading Image
+    I = cv2.imread('test.jpg', 0)
 
+    # Pixel Frequency
+    h, w = I.shape
+    print(h, w)
+    hist = np.zeros(256)
+    for i in np.arange(0, h, 1):
+        for j in np.arange(0, w, 1):
+            hist[I[i, j]] += 1
 
-def part3_histogram_comparing():
-    DayImage = skimage.util.img_as_ubyte(rgb2gray(io.imread("day.jpg")))
-    NightImage = skimage.util.img_as_ubyte(rgb2gray(io.imread("night.jpg")))
+    Hist = []
+    for i in range(0, 256, 4):
+        Hist.append(hist[i] + hist[i + 1] + hist[i + 2] + hist[i + 3])
+    hist = Hist
+    print(len(hist))
 
-    print(len(DayImage.ravel()))
-    print(len(NightImage.ravel()))
+    H = np.zeros(64)
+    for n in np.arange(0, 64, 1):
+        H[n] = H[n - 1] + hist[n]
 
-    plt.subplot(1, 2, 1)
-    plt.title("Histogram of numpy Day Image")
-    hist2, bin_edges = np.histogram(DayImage, bins=256, range=(0, 256))
-    plt.xlabel("grayscale value")
-    plt.ylabel("pixel count")
-    plt.plot(bin_edges[0:-1], hist2)
+    print(len(H))
 
-    plt.subplot(1, 2, 2)
-    plt.title("Histogram of numpy Night Image")
-    hist2, bin_edges = np.histogram(NightImage, bins=256, range=(0, 256))
-    plt.xlabel("grayscale value")
-    plt.ylabel("pixel count")
-    plt.plot(bin_edges[0:-1], hist2)
+    J = np.zeros((h, w))
+    for i in np.arange(0, h, 1):
+        for j in np.arange(0, w, 1):
+            J[i, j] = np.floor((63 / (h * w)) * H[I[i, j] // 4 + 1] + 0.5)
+
+    hist2, bin_edges = np.histogram(J, bins=64)
+
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+
+    ax1.imshow(I, cmap='gray')
+    ax1.set_title("Original Image")
+
+    ax2.plot(hist)
+    ax2.set_title("Histogram")
+
+    ax3.imshow(J, cmap='gray')
+    ax3.set_title("New Image")
+
+    ax4.plot(hist2)
+    ax4.set_title("Histogram after Equalization")
 
     plt.show()
+def part3_histogram_comparing():
+    I1 = cv2.imread('day.jpg', 0)
+    I2 = cv2.imread('night.jpg', 0)
 
+    # Pixel Frequency
+    h, w = I1.shape
+    hist1 = np.zeros(256)
+    for i in np.arange(0, h, 1):
+        for j in np.arange(0, w, 1):
+            hist1[I1[i, j]] += 1/(h*w)
+
+    h, w = I2.shape
+    hist2 = np.zeros(256)
+    for i in np.arange(0, h, 1):
+        for j in np.arange(0, w, 1):
+            hist2[I2[i, j]] += 1/(h*w)
+
+    sum = 0
+    for i in range(256):
+        sum += math.sqrt(hist1[i]*hist2[i])
+    print(sum)
 
 def part4_histogram_matching():
     """add your code here"""
 
 
 if __name__ == '__main__':
-    part1_histogram_compute()
-    part2_histogram_equalization()
+    # part1_histogram_compute()
+    # part2_histogram_equalization()
     part3_histogram_comparing()
-    part4_histogram_matching()
+    # part4_histogram_matching()
