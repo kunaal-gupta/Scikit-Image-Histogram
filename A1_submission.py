@@ -28,6 +28,7 @@ def BinArrGenerate(n, start, end):
 
     return BinArr
 
+
 def BinCompute(bin_arr, pixel):
     """Computing appropriate bin for a particular pixel"""
 
@@ -39,7 +40,6 @@ def BinCompute(bin_arr, pixel):
 
 
 def image_histogram(bin, imageArr):
-
     # Making array of 64 equal sized bins from 0-256
     bin_arr = BinArrGenerate(bin, 0, 256)
 
@@ -51,8 +51,7 @@ def image_histogram(bin, imageArr):
     for pixel in imageArr:
         pixelCountDict[BinCompute(bin_arr, pixel)] += 1
 
-    return list(pixelCountDict.values())
-
+    return pixelCountDict
 
 
 def part1_histogram_compute():
@@ -67,13 +66,13 @@ def part1_histogram_compute():
     plt.title("Self Histogram")
     plt.xlabel("grayscale value")
     plt.ylabel("pixel count")
-    plt.plot(image_histogram(bin=64, imageArr=fimage))
+    plt.plot(list(image_histogram(bin=64, imageArr=fimage).values))
 
     # Plotting NumPy histogram
     plt.subplot(1, 2, 2)
     plt.title("Histogram of numpy Image")
     hist2, bin_edges = np.histogram(image, bins=64, range=(0, 256))
-    print(bin_edges)
+
     plt.title("NumPy Histogram")
     plt.xlabel("grayscale value")
     plt.ylabel("pixel count")
@@ -82,14 +81,12 @@ def part1_histogram_compute():
     plt.show()
 
 
-
 def part2_histogram_equalization():
     # Reading Image
     I = cv2.imread('test.jpg', 0)
 
     # Pixel Frequency
     h, w = I.shape
-    print(h, w)
     hist = np.zeros(256)
     for i in np.arange(0, h, 1):
         for j in np.arange(0, w, 1):
@@ -128,7 +125,7 @@ def part2_histogram_equalization():
     ax1.imshow(I, cmap='gray')
     ax1.set_title("Original Image")
 
-    ax2.plot(image_histogram(bin = 64, imageArr=I.ravel()))
+    ax2.plot(image_histogram(bin=64, imageArr=I.ravel()))
     ax2.set_title("Histogram")
 
     ax3.imshow(J, cmap='gray')
@@ -164,11 +161,55 @@ def part3_histogram_comparing():
 
 
 def part4_histogram_matching():
-    """add your code here"""
+    I1 = cv2.imread('day.jpg', 0)
+    I2 = cv2.imread('night.jpg', 0)
+
+    l, w = I1.shape
+
+    # Histogram
+    hist1, bin_edges1 = np.histogram(I1, bins=256, range=(0, 256))
+    hist2, bin_edges2 = np.histogram(I2, bins=256, range=(0, 256))
+
+    # print(hist2)
+    H1 = np.zeros(256, dtype=float)
+    H2 = np.zeros(256, dtype=float)
+
+    H1[0] = hist1[0]
+    H2[0] = hist2[0]
+
+    #  Cumulative Histogram
+    for i in range(1, len(hist1)):
+        H1[i] = (H1[i - 1] + hist1[i])
+        H2[i] = (H2[i - 1] + hist2[i])
+
+    # Normalized Histogram
+
+    for i in range(len(H1)):
+        H1[i] /= (l * w)
+        H2[i] /= (l * w)
+
+    GrayScaleRange = [i for i in range(0, 256)]
+
+    J = np.zeros((l, w))
+    A = [0] * 256
+
+    a_ = 0
+    for a in GrayScaleRange:
+        while H1[a] > H2[a_]:
+            a_ += 1
+        A[a] = a_
+
+    for i in range(0, l, 1):
+        for j in range(0, w, 1):
+            a = int(I1[i][j])
+            J[i, j] = A[a]
+
+    plt.imshow(J, cmap='gray')
+    plt.show()
 
 
 if __name__ == '__main__':
     # part1_histogram_compute()
-    part2_histogram_equalization()
-#     # part3_histogram_comparing()
-#     # part4_histogram_matching()
+    # part2_histogram_equalization()
+    # part3_histogram_comparing()
+    part4_histogram_matching()
