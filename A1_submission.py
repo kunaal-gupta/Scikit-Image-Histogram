@@ -66,7 +66,7 @@ def part1_histogram_compute():
     plt.title("Self Histogram")
     plt.xlabel("grayscale value")
     plt.ylabel("pixel count")
-    plt.plot(list(image_histogram(bin=64, imageArr=fimage).values))
+    plt.plot(list(image_histogram(bin=64, imageArr=fimage).values()))
 
     # Plotting NumPy histogram
     plt.subplot(1, 2, 2)
@@ -125,7 +125,7 @@ def part2_histogram_equalization():
     ax1.imshow(I, cmap='gray')
     ax1.set_title("Original Image")
 
-    ax2.plot(image_histogram(bin=64, imageArr=I.ravel()))
+    ax2.plot((image_histogram(bin=64, imageArr=I.ravel())).values())
     ax2.set_title("Histogram")
 
     ax3.imshow(J, cmap='gray')
@@ -158,6 +158,7 @@ def part3_histogram_comparing():
     for i in range(256):
         sum += math.sqrt(hist1[i] * hist2[i])
     print(sum)
+    return sum
 
 
 def histogram_matching(I1, I2):
@@ -200,8 +201,28 @@ def histogram_matching(I1, I2):
         for j in range(0, w, 1):
             a = int(I1[i][j])
             J[i, j] = A[a]
-
     return J
+
+
+def part4_b():
+    I1 = io.imread('day.jpg')
+    I2 = io.imread('night.jpg')
+
+
+    I1red = I1[:, :, 0]
+    I1green = I1[:, :, 1]
+    I1blue = I1[:, :, 2]
+
+    I2red = I2[:, :, 0]
+    I2green = I2[:, :, 1]
+    I2blue = I2[:, :, 2]
+
+    Jred = histogram_matching(I1red, I2red)
+    Jgreen = histogram_matching(I1green, I2green)
+    Jblue = histogram_matching(I1blue, I2blue)
+
+    rgb = np.dstack((Jred, Jgreen, Jblue))
+    return I1, I2, rgb
 
 
 def part4_histogram_matching():
@@ -234,38 +255,8 @@ def part4_histogram_matching():
     plt.show()
 
 
-def part4_b():
-    I1 = io.imread('day.jpg')
-    I2 = io.imread('night.jpg')
-
-    print(I1)
-
-    I1red = I1[:, :, 0]
-    I1green = I1[:, :, 1]
-    I1blue = I1[:, :, 2]
-
-    I2red = I2[:, :, 0]
-    I2green = I2[:, :, 1]
-    I2blue = I2[:, :, 2]
-
-    Jred = histogram_matching(I1red, I2red)
-    Jgreen = histogram_matching(I1green, I2green)
-    Jblue = histogram_matching(I1blue, I2blue)
-
-    rgb = np.dstack((Jred, Jgreen, Jblue))
-    return I1, I2, rgb
-    # print(rgb)
-    #
-    # fig, (ax1) = plt.subplots(1, 1)
-    #
-    # ax1.imshow(rgb.astype(np.uint16))
-    # plt.show()
-
-# part4_b()
-
-
 if __name__ == '__main__':
-    # part1_histogram_compute()
-    # part2_histogram_equalization()
-    # part3_histogram_comparing()
+    part1_histogram_compute()
+    part2_histogram_equalization()
+    part3_histogram_comparing()
     part4_histogram_matching()
