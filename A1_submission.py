@@ -160,10 +160,7 @@ def part3_histogram_comparing():
     print(sum)
 
 
-def part4_histogram_matching():
-    I1 = cv2.imread('day.jpg', 0)
-    I2 = cv2.imread('night.jpg', 0)
-
+def histogram_matching(I1, I2):
     l, w = I1.shape
 
     # Histogram
@@ -204,8 +201,67 @@ def part4_histogram_matching():
             a = int(I1[i][j])
             J[i, j] = A[a]
 
-    plt.imshow(J, cmap='gray')
+    return J
+
+
+def part4_histogram_matching():
+    I1 = cv2.imread('day.jpg', 0)
+    I2 = cv2.imread('night.jpg', 0)
+
+    J = histogram_matching(I1, I2)
+    cI1, cI2, Jcol = part4_b()
+
+    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3)
+
+    ax1.imshow(I1, cmap='gray')
+    ax1.set_title("source_gs")
+
+    ax2.imshow(I2, cmap='gray')
+    ax2.set_title("template_gs")
+
+    ax3.imshow(J, cmap='gray')
+    ax3.set_title("matched_gs")
+
+    ax4.imshow(cI1)
+    ax4.set_title("source_rgb")
+
+    ax5.imshow(cI2)
+    ax5.set_title("template_rgb")
+
+    ax6.imshow(Jcol.astype(np.uint16))
+    ax6.set_title("matched_rgb")
+
     plt.show()
+
+
+def part4_b():
+    I1 = io.imread('day.jpg')
+    I2 = io.imread('night.jpg')
+
+    print(I1)
+
+    I1red = I1[:, :, 0]
+    I1green = I1[:, :, 1]
+    I1blue = I1[:, :, 2]
+
+    I2red = I2[:, :, 0]
+    I2green = I2[:, :, 1]
+    I2blue = I2[:, :, 2]
+
+    Jred = histogram_matching(I1red, I2red)
+    Jgreen = histogram_matching(I1green, I2green)
+    Jblue = histogram_matching(I1blue, I2blue)
+
+    rgb = np.dstack((Jred, Jgreen, Jblue))
+    return I1, I2, rgb
+    # print(rgb)
+    #
+    # fig, (ax1) = plt.subplots(1, 1)
+    #
+    # ax1.imshow(rgb.astype(np.uint16))
+    # plt.show()
+
+# part4_b()
 
 
 if __name__ == '__main__':
