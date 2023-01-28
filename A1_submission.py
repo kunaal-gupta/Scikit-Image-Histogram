@@ -2,10 +2,6 @@ import math
 import cv2
 from skimage import io
 import numpy as np
-
-import matplotlib
-
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 
@@ -123,13 +119,13 @@ def part2_histogram_equalization():
     ax1.imshow(I, cmap='gray')
     ax1.set_title("Original Image")
 
-    ax2.plot((image_histogram(bin=64, imageArr=I.ravel())).values())
+    ax2.plot(list((image_histogram(bin=64, imageArr=I.ravel())).values()))
     ax2.set_title("Histogram")
 
     ax3.imshow(J, cmap='gray')
     ax3.set_title("New Image")
 
-    ax4.plot(pixelCountDict.values())
+    ax4.plot(list(pixelCountDict.values()))
     ax4.set_title("Histogram after Equalization")
 
     plt.show()
