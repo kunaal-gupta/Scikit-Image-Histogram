@@ -1,12 +1,7 @@
 import math
-
 import cv2
-import numpy
-import skimage
-import skimage.util
 from skimage import io
 import numpy as np
-from skimage.color import rgb2gray
 
 import matplotlib
 
@@ -55,6 +50,8 @@ def image_histogram(bin, imageArr):
 
 
 def part1_histogram_compute():
+    """Computing a 64-bin gray scale histogram of the image"""
+
     # Reading Image in grayscale
     image = cv2.imread('test.jpg', 0)
 
@@ -63,9 +60,7 @@ def part1_histogram_compute():
 
     # Plotting Self histogram
     plt.subplot(1, 2, 1)
-    plt.title("Self Histogram")
-    plt.xlabel("grayscale value")
-    plt.ylabel("pixel count")
+    plt.title("My Histogram")
     plt.plot(list(image_histogram(bin=64, imageArr=fimage).values()))
 
     # Plotting NumPy histogram
@@ -73,40 +68,43 @@ def part1_histogram_compute():
     plt.title("Histogram of numpy Image")
     hist2, bin_edges = np.histogram(image, bins=64, range=(0, 256))
 
-    plt.title("NumPy Histogram")
-    plt.xlabel("grayscale value")
-    plt.ylabel("pixel count")
+    plt.title("Numpy Histogram")
 
     plt.plot(hist2)
     plt.show()
 
 
 def part2_histogram_equalization():
+    """Performing a 64-bin grayscale histogram equalization"""
+
     # Reading Image
     I = cv2.imread('test.jpg', 0)
 
-    # Pixel Frequency
+    # Counting Pixel Frequency at each from 0-255
     h, w = I.shape
     hist = np.zeros(256)
     for i in np.arange(0, h, 1):
         for j in np.arange(0, w, 1):
             hist[I[i, j]] += 1
 
+    # Making 64 bin histogram
     Hist = []
     for i in range(0, 256, 4):
         Hist.append(hist[i] + hist[i + 1] + hist[i + 2] + hist[i + 3])
     hist = Hist
 
+    # Calculating Cumulative Histogram
     H = np.zeros(64)
     for n in np.arange(0, 64, 1):
         H[n] = H[n - 1] + hist[n]
 
+    # Applying equalization algorithm
     J = np.zeros((h, w))
     for i in np.arange(0, h, 1):
         for j in np.arange(0, w, 1):
             J[i, j] = np.floor((63 / (h * w)) * H[I[i, j] // 4 + 1] + 0.5)
 
-    hist2, bin_edges = np.histogram(J, bins=64)
+    # Plotting graphs & images
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
 
     fimage = list(J.ravel())
@@ -138,16 +136,20 @@ def part2_histogram_equalization():
 
 
 def part3_histogram_comparing():
+    """ Comparing two images' Histogram to calculate Bhattacharyya Coefficient"""
+
+    # Reading the images
     I1 = cv2.imread('day.jpg', 0)
     I2 = cv2.imread('night.jpg', 0)
 
-    # Pixel Frequency
+    # Pixel Frequency for image 1
     h, w = I1.shape
     hist1 = np.zeros(256)
     for i in np.arange(0, h, 1):
         for j in np.arange(0, w, 1):
             hist1[I1[i, j]] += 1 / (h * w)
 
+    # Pixel Frequency for image 2
     h, w = I2.shape
     hist2 = np.zeros(256)
     for i in np.arange(0, h, 1):
@@ -155,23 +157,30 @@ def part3_histogram_comparing():
             hist2[I2[i, j]] += 1 / (h * w)
 
     sum = 0
+
+    # Calculating Bhattacharyya Coefficient
     for i in range(256):
         sum += math.sqrt(hist1[i] * hist2[i])
-    print(sum)
-    return sum
+    output = 'Bhattacharyya Coefficient: ' + str(sum)
+    print(output)
+    return output
 
 
-def histogram_matching(I1, I2):
+def histogram_matching_algorithm(I1, I2):
+    """Implementing Histogram matching of two images. It's used to calculate for both colored & grayscale images"""
+
+    # Dimensions of the image
     l, w = I1.shape
 
     # Histogram
     hist1, bin_edges1 = np.histogram(I1, bins=256, range=(0, 256))
     hist2, bin_edges2 = np.histogram(I2, bins=256, range=(0, 256))
 
-    # print(hist2)
+    # New Numpy arrays
     H1 = np.zeros(256, dtype=float)
     H2 = np.zeros(256, dtype=float)
 
+    # Initializing first elements in the new numpy array
     H1[0] = hist1[0]
     H2[0] = hist2[0]
 
@@ -181,11 +190,11 @@ def histogram_matching(I1, I2):
         H2[i] = (H2[i - 1] + hist2[i])
 
     # Normalized Histogram
-
     for i in range(len(H1)):
         H1[i] /= (l * w)
         H2[i] /= (l * w)
 
+    # Implementing Histogram matching algorithm
     GrayScaleRange = [i for i in range(0, 256)]
 
     J = np.zeros((l, w))
@@ -201,39 +210,55 @@ def histogram_matching(I1, I2):
         for j in range(0, w, 1):
             a = int(I1[i][j])
             J[i, j] = A[a]
+
     return J
 
 
-def part4_b():
+def histogram_matching_colored():
+    """ Histogram Matching for the colored Image"""
+
+    # Reading images in RGB
     I1 = io.imread('day.jpg')
     I2 = io.imread('night.jpg')
 
-
+    # Breaking image 1 array into RGB arrays
     I1red = I1[:, :, 0]
     I1green = I1[:, :, 1]
     I1blue = I1[:, :, 2]
 
+    # Breaking image 2 array into RGB arrays
     I2red = I2[:, :, 0]
     I2green = I2[:, :, 1]
     I2blue = I2[:, :, 2]
 
-    Jred = histogram_matching(I1red, I2red)
-    Jgreen = histogram_matching(I1green, I2green)
-    Jblue = histogram_matching(I1blue, I2blue)
+    # New RGB arrys after doing histogram matching of image 1 & image 2
+    Jred = histogram_matching_algorithm(I1red, I2red)
+    Jgreen = histogram_matching_algorithm(I1green, I2green)
+    Jblue = histogram_matching_algorithm(I1blue, I2blue)
 
+    # Joining RGB arrays to form colored image
     rgb = np.dstack((Jred, Jgreen, Jblue))
+
     return I1, I2, rgb
 
 
 def part4_histogram_matching():
+    """ This function plots final colored & grayscale images & their respective input images """
+
+    # Reading images in grayscale
     I1 = cv2.imread('day.jpg', 0)
     I2 = cv2.imread('night.jpg', 0)
 
-    J = histogram_matching(I1, I2)
-    cI1, cI2, Jcol = part4_b()
+    # Output array of grayscale image after histogram matching
+    J = histogram_matching_algorithm(I1, I2)
 
+    # Output array of colored image after histogram matching
+    cI1, cI2, Jcol = histogram_matching_colored()
+
+    # Making the fianl images & their input images ready for plotting
     fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3)
 
+    # Grayscale Images
     ax1.imshow(I1, cmap='gray')
     ax1.set_title("source_gs")
 
@@ -243,6 +268,7 @@ def part4_histogram_matching():
     ax3.imshow(J, cmap='gray')
     ax3.set_title("matched_gs")
 
+    # RGB Images
     ax4.imshow(cI1)
     ax4.set_title("source_rgb")
 
