@@ -43,12 +43,12 @@ Match histograms between two grayscale images (day.jpg and night.jpg) and betwee
 Run the main script to execute all the functions:
 
 ## Functions
-1. BinArrGenerate(n, start, end): Generates an array consisting of n + 1 elements with equal differences from start to end.
-2. BinCompute(bin_arr, pixel): Computes the appropriate bin for a given pixel based on the bin array.
-3. image_histogram(bin, imageArr): Calculates the histogram of an image using the specified number of bins.
-4. part1_histogram_compute(): Calculates and plots the 64-bin grayscale histogram of an image using both custom logic and NumPy's built-in histogram function.
-5. part2_histogram_equalization(): Performs histogram equalization on a grayscale image to enhance its contrast.
-6. part3_histogram_comparing(): Compares histograms of two images using the Bhattacharyya Coefficient and outputs the result.
-7. histogram_matching_algorithm(I1, I2): Implements histogram matching between two grayscale images, adjusting the pixel values of the first image to match the histogram of the second.
-8. histogram_matching_colored(): Implements histogram matching for colored images by applying histogram matching independently to the red, green, and blue channels.
-9. part4_histogram_matching(): Displays the results of histogram matching for both grayscale and colored images.
+- `BinArrGenerate(n, start, end)`: Generates an array consisting of n + 1 elements with equal differences from start to end.
+- `BinCompute(bin_arr, pixel)`: Computes the appropriate bin for a given pixel based on the bin array.
+- `image_histogram(bin, imageArr)`: Calculates the histogram of an image using the specified number of bins.
+- `part1_histogram_compute()`: Calculates and plots the 64-bin grayscale histogram of an image using both custom logic and NumPy's built-in histogram function.
+- `part2_histogram_equalization()`: Performs histogram equalization on a grayscale image to enhance its contrast.
+- `part3_histogram_comparing()`: Compares histograms of two images using the Bhattacharyya Coefficient and outputs the result.
+- `histogram_matching_algorithm(I1, I2)`: Implements histogram matching between two grayscale images, adjusting the pixel values of the first image to match the histogram of the second.
+- `histogram_matching_colored()`: Implements histogram matching for colored images by applying histogram matching independently to the red, green, and blue channels.
+- `part4_histogram_matching()`: Displays the results of histogram matching for both grayscale and colored images.
